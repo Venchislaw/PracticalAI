@@ -1,0 +1,21 @@
+In this project I implement realistic Real Estate web site.
+
+Tools:
+Python
+Streamlit
+AWS / Azure / Google Cloud / (something else)
+
+Tasks:
+
+Understand Huge Dataset
+Build Reliable model
+Build Web Interface
+Upload model to cloud
+Connect web interface with cloud model
+
+This project will take a while, but...
+
+It's just cool.
+
+I'll start with simple CaliforniaHousePricing Dataset.
+And slowly will move on Zillow Dataset with 3 Million Samples!
