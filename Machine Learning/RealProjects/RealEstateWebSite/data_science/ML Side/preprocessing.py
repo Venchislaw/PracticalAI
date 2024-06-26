@@ -5,7 +5,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
-
 num_feats = []
 cat_feats = []
 ohe_cat_feats = []
@@ -76,3 +75,17 @@ def preprocess_data(data_path):
         cat_pipeline.transform(X_test_cat),
         columns=num_feats
     )
+
+    X_train_ohe_cat = pd.get_dummies(X_train_cat[ohe_cat_feats])
+    X_test_ohe_cat = pd.get_dummies(X_test_cat[ohe_cat_feats])
+
+    X_train_cat = pd.merge(X_train_cat, X_train_ohe_cat, left_index=True, right_index=True)
+    X_test_cat = pd.merge(X_test_cat, X_test_ohe_cat, left_index=True, right_index=True)
+
+    X_train_cat = X_train.drop(ohe_cat_feats, axis=1)
+    X_test_cat = X_test.drop(ohe_cat_feats, axis=1)
+
+    X_train = pd.merge(X_train_num, X_train_cat, left_index=True, right_index=True)
+    X_test = pd.merge(X_test_num, X_test_cat, left_index=True, right_index=True)
+
+    return X_train, X_test
