@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import RobustScaler, LabelEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
 
 
 num_feats = []
@@ -29,3 +30,49 @@ def preprocess_data(data_path):
     feature_cluster(df)
 
     df = df[num_feats + cat_feats]
+
+    X_train, X_test, y_train, y_test = train_test_split(df, train_size=0.8)
+
+    X_train = pd.DataFrame(X_train, df.columns)
+    X_test = pd.DataFrame(X_test, df.columns)
+
+    numeric_df = df[num_feats]
+    categoric_df = df[cat_feats]
+
+    num_pipeline = make_pipeline(
+        SimpleImputer("mean"),
+        RobustScaler()
+    )
+
+    cat_pipeline = make_pipeline(
+        SimpleImputer("most_frequent"),
+        LabelEncoder()
+    )
+
+    X_train_num = X_train[num_feats]
+    X_test_num = X_test[num_feats]
+
+    X_train_cat = X_train[cat_feats]
+    X_test_cat = X_test[cat_feats]
+
+    # numero
+    X_train_num = pd.DataFrame(
+        num_pipeline.fit_transform(X_train_num),
+        columns=num_feats
+    )
+
+    X_test_num = pd.DataFrame(
+        num_pipeline.transform(X_test_num),
+        columns=num_feats
+    )
+
+    # categorical
+    X_train_cat = pd.DataFrame(
+        cat_pipeline.fit_transform(X_train_cat),
+        columns=num_feats
+    )
+
+    X_test_cat = pd.DataFrame(
+        cat_pipeline.transform(X_test_cat),
+        columns=num_feats
+    )
