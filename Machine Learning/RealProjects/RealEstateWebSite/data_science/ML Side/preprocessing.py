@@ -5,11 +5,11 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 
+np.random.seed(1)
 
 num_feats = []
 cat_feats = []
 ohe_cat_feats = []
-
 
 # a
 pd.set_option("display.max_columns", 500)
@@ -35,7 +35,6 @@ def feature_cluster(df):
 def preprocess(data_path):
     df = pd.read_csv(data_path)
     feature_cluster(df)
-    # print("NoSeWa" in cat_feats)
 
     X = df.drop("SalePrice", axis=1)
     y = df["SalePrice"]
@@ -59,7 +58,6 @@ def preprocess(data_path):
     X_train_num = pd.DataFrame(X_train_num, columns=num_feats)
     X_test_num = pd.DataFrame(X_test_num, columns=num_feats)
 
-
     # categorical data preprocessing
 
     imputer = SimpleImputer(strategy="most_frequent")
@@ -80,31 +78,20 @@ def preprocess(data_path):
     X_test_cat_ohe = X_test[ohe_cat_feats]
 
     X_train_cat_ohe = pd.get_dummies(X_train_cat_ohe, dtype="int")
-    X_test_cat_ohe = pd.get_dummies(X_test_cat_ohe, dtype="int")
 
+    X_test_cat_ohe = pd.get_dummies(X_test_cat_ohe, dtype="int")
 
     X_train_cat = pd.DataFrame(X_train_cat, columns=cat_feats)
     X_test_cat = pd.DataFrame(X_test_cat, columns=cat_feats)
 
+    X_train_cat = X_train_cat.drop(ohe_cat_feats, axis=1)
+    X_test_cat = X_test_cat.drop(ohe_cat_feats, axis=1)
+
     X_train_cat = pd.merge(X_train_cat, X_train_cat_ohe, left_index=True, right_index=True)
     X_test_cat = pd.merge(X_test_cat, X_test_cat_ohe, left_index=True, right_index=True)
-
-
-    # gotta fix that
-    """print(set(X_train_cat.columns).difference(set(ohe_cat_feats)))
-    print(ohe_cat_feats)
-    print("-" * 60)
-    print(X_train_cat[ohe_cat_feats].head())
-
-    X_train_cat = X_train_cat.drop(ohe_cat_feats, axis=1)
-    X_test_cat = X_test_cat.drop(ohe_cat_feats, axis=1)"""
 
     # merge two dataframes
     X_train = pd.merge(X_train_num, X_train_cat, left_index=True, right_index=True)
     X_test = pd.merge(X_test_num, X_test_cat, left_index=True, right_index=True)
 
     return X_train, X_test, y_train, y_test
-
-
-X_train, X_test, y_train, y_test = preprocess("/media/venchislav/Говорящий Том/RealProjects/RealEstateWebSite/data_science/Data/train.csv")
-print(X_train.head())
